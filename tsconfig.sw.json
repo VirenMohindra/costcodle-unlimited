@@ -5,12 +5,6 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": [
-    "src/sw.ts"
-  ],
-  "exclude": [
-    "src/modules/**/*",
-    "src/main.ts",
-    "src/types/**/*"
-  ]
+  "include": ["src/sw.ts"],
+  "exclude": ["src/modules/**/*", "src/main.ts", "src/types/**/*"]
 }

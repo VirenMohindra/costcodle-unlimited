@@ -5,14 +5,9 @@
 
 import { stateManager } from './state.js';
 import { gameInitializer, modalManager } from './game.js';
-import { keyboard, domCache } from './dom.js';
+import { domCache, keyboard } from './dom.js';
 import { dateUtils, utils } from './utils.js';
-import type {
-  AppState,
-  GameState,
-  UserStats,
-  ServiceWorkerStatus
-} from '../types/game.js';
+import type { GameState, ServiceWorkerStatus, UserStats } from '../types/game.js';
 
 /**
  * Application class that manages the entire game lifecycle
@@ -64,7 +59,6 @@ class CostcodleApp {
 
       this.initialized = true;
       console.log('✅ Costcodle initialized successfully');
-
     } catch (error) {
       console.error('❌ Failed to initialize Costcodle:', error);
       this.handleInitializationError(error as Error);
@@ -72,10 +66,63 @@ class CostcodleApp {
   }
 
   /**
+   * Get application status
+   */
+  getStatus(): {
+    initialized: boolean;
+    gameState: GameState;
+    userStats: UserStats;
+    isArchiveMode: boolean;
+    gameNumber: number;
+  } {
+    return {
+      initialized: this.initialized,
+      gameState: stateManager.getGameState(),
+      userStats: stateManager.getUserStats(),
+      isArchiveMode: stateManager.get('isArchiveMode'),
+      gameNumber: stateManager.get('gameNumber')
+    };
+  }
+
+  /**
+   * Get service worker status
+   */
+  async getServiceWorkerStatus(): Promise<ServiceWorkerStatus> {
+    if (!('serviceWorker' in navigator)) {
+      return { supported: false };
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      return {
+        supported: true,
+        registered: !!registration,
+        active: !!registration?.active,
+        waiting: !!registration?.waiting,
+        installing: !!registration?.installing
+      };
+    } catch (error) {
+      return {
+        supported: true,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  /**
+   * Restart the application
+   */
+  async restart(): Promise<void> {
+    console.log('🔄 Restarting application...');
+    this.initialized = false;
+    await this.init();
+  }
+
+  /**
    * Wait for DOM to be fully loaded
    */
   private waitForDOM(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => resolve());
       } else {
@@ -110,12 +157,12 @@ class CostcodleApp {
    */
   private setupStateListeners(): void {
     // Listen for loading state changes
-    stateManager.subscribe('isLoading', (isLoading) => {
+    stateManager.subscribe('isLoading', isLoading => {
       this.handleLoadingStateChange(isLoading);
     });
 
     // Listen for archive mode changes
-    stateManager.subscribe('isArchiveMode', (isArchiveMode) => {
+    stateManager.subscribe('isArchiveMode', isArchiveMode => {
       this.handleArchiveModeChange(isArchiveMode);
     });
 
@@ -130,9 +177,12 @@ class CostcodleApp {
    */
   private setupGlobalListeners(): void {
     // Handle window resize
-    window.addEventListener('resize', utils.throttle(() => {
-      this.handleWindowResize();
-    }, 250));
+    window.addEventListener(
+      'resize',
+      utils.throttle(() => {
+        this.handleWindowResize();
+      }, 250)
+    );
 
     // Handle page visibility changes
     document.addEventListener('visibilitychange', () => {
@@ -140,7 +190,7 @@ class CostcodleApp {
     });
 
     // Handle beforeunload for unsaved changes
-    window.addEventListener('beforeunload', (event) => {
+    window.addEventListener('beforeunload', event => {
       this.handleBeforeUnload(event);
     });
 
@@ -167,7 +217,6 @@ class CostcodleApp {
       await this.modules.gameInitializer.startGame();
 
       console.log('✅ Game started successfully');
-
     } catch (error) {
       console.error('❌ Failed to start game:', error);
       throw error;
@@ -221,8 +270,10 @@ class CostcodleApp {
   private handleGameStateChange(newState: GameState, oldState: GameState): void {
     // Log game progress for analytics (if needed)
     if (newState.guesses.length !== oldState.guesses.length) {
-      console.log(`🎯 Guess ${newState.guesses.length}/6:`,
-                  newState.guesses[newState.guesses.length - 1]);
+      console.log(
+        `🎯 Guess ${newState.guesses.length}/6:`,
+        newState.guesses[newState.guesses.length - 1]
+      );
     }
 
     if (newState.hasWon && !oldState.hasWon) {
@@ -381,25 +432,6 @@ class CostcodleApp {
   }
 
   /**
-   * Get application status
-   */
-  getStatus(): {
-    initialized: boolean;
-    gameState: GameState;
-    userStats: UserStats;
-    isArchiveMode: boolean;
-    gameNumber: number;
-  } {
-    return {
-      initialized: this.initialized,
-      gameState: stateManager.getGameState(),
-      userStats: stateManager.getUserStats(),
-      isArchiveMode: stateManager.get('isArchiveMode'),
-      gameNumber: stateManager.get('gameNumber')
-    };
-  }
-
-  /**
    * Register service worker for offline functionality
    */
   private async registerServiceWorker(): Promise<void> {
@@ -425,7 +457,6 @@ class CostcodleApp {
         if (registration.active) {
           registration.update();
         }
-
       } catch (error) {
         console.warn('⚠️ Service Worker registration failed:', error);
       }
@@ -454,40 +485,6 @@ class CostcodleApp {
         notification.remove();
       }
     }, 30000);
-  }
-
-  /**
-   * Get service worker status
-   */
-  async getServiceWorkerStatus(): Promise<ServiceWorkerStatus> {
-    if (!('serviceWorker' in navigator)) {
-      return { supported: false };
-    }
-
-    try {
-      const registration = await navigator.serviceWorker.getRegistration();
-      return {
-        supported: true,
-        registered: !!registration,
-        active: !!registration?.active,
-        waiting: !!registration?.waiting,
-        installing: !!registration?.installing
-      };
-    } catch (error) {
-      return {
-        supported: true,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-  }
-
-  /**
-   * Restart the application
-   */
-  async restart(): Promise<void> {
-    console.log('🔄 Restarting application...');
-    this.initialized = false;
-    await this.init();
   }
 }
 

@@ -12,19 +12,62 @@ import type {
 } from '../types/game.js';
 
 /**
- * Safe localStorage operations with error handling
+ * Safe localStorage operations with error handling and fallbacks
+ *
+ * Provides a robust wrapper around the browser's localStorage API with:
+ * - JSON serialization/deserialization
+ * - Error handling for quota exceeded scenarios
+ * - Graceful fallbacks when localStorage is unavailable
+ * - Type-safe operations with TypeScript generics
+ *
+ * @example
+ * ```typescript
+ * // Store complex data
+ * const success = storage.set('user-preferences', { theme: 'dark', lang: 'en' });
+ *
+ * // Retrieve with type safety and defaults
+ * const prefs = storage.get('user-preferences', { theme: 'light', lang: 'en' });
+ * ```
  */
 export const storage = {
+  /**
+   * Safely retrieves and parses data from localStorage
+   *
+   * @template T - The expected type of the stored data
+   * @param key - The localStorage key to retrieve
+   * @param defaultValue - Value to return if key doesn't exist or parsing fails
+   * @returns The parsed data or the default value
+   *
+   * @example
+   * ```typescript
+   * const userStats = storage.get('user-stats', { gamesPlayed: 0, wins: 0 });
+   * ```
+   */
   get<T = unknown>(key: string, defaultValue: T): T {
     try {
       const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) as T : defaultValue;
+      return item ? (JSON.parse(item) as T) : defaultValue;
     } catch (error) {
       console.error(`Failed to read from localStorage (${key}):`, error);
       return defaultValue;
     }
   },
 
+  /**
+   * Safely stores data in localStorage with JSON serialization
+   *
+   * @param key - The localStorage key to store data under
+   * @param value - The data to store (will be JSON.stringify'd)
+   * @returns true if storage was successful, false if it failed
+   *
+   * @example
+   * ```typescript
+   * const success = storage.set('game-state', { level: 5, score: 1000 });
+   * if (!success) {
+   *   console.warn('Failed to save game state');
+   * }
+   * ```
+   */
   set(key: string, value: unknown): boolean {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -132,9 +175,28 @@ export const validation = {
 };
 
 /**
- * Date and time utilities
+ * Date and time utilities for game number calculation and formatting
+ *
+ * Handles date-based game logic including:
+ * - Converting dates to game numbers based on start date
+ * - Converting game numbers back to readable dates
+ * - Formatting relative time strings
+ * - Date validation utilities
  */
 export const dateUtils = {
+  /**
+   * Calculates the current game number based on days elapsed since the start date
+   *
+   * The game number represents which daily game should be played based on
+   * the number of days that have passed since September 21, 2023.
+   *
+   * @returns The game number (1-based) for today's date
+   *
+   * @example
+   * ```typescript
+   * const gameNumber = dateUtils.getGameNumber(); // e.g., 42 for day 42
+   * ```
+   */
   getGameNumber(): number {
     const currDate = new Date();
     const timeDifference = currDate.getTime() - GAME_CONFIG.COSTCODLE_START_DATE.getTime();
@@ -189,8 +251,10 @@ export const deviceUtils = {
   },
 
   isMobile(): boolean {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (navigator.maxTouchPoints != null && navigator.maxTouchPoints > 2);
+    return (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints != null && navigator.maxTouchPoints > 2)
+    );
   },
 
   supportsClipboard(): boolean {
@@ -287,11 +351,7 @@ export const animationUtils = {
   ): Promise<void> {
     if (!element) return Promise.resolve();
 
-    const {
-      duration = 300,
-      easing = 'ease-out',
-      delay = 0
-    } = options;
+    const { duration = 300, easing = 'ease-out', delay = 0 } = options;
 
     return new Promise(resolve => {
       element.style.animationName = animationName;
@@ -311,9 +371,31 @@ export const animationUtils = {
 };
 
 /**
- * Mathematical utilities
+ * Mathematical utilities for game calculations and number operations
+ *
+ * Provides functions for:
+ * - Percentage calculations for guess proximity
+ * - Range validation and clamping
+ * - Number formatting and rounding
+ * - Currency formatting with internationalization
  */
 export const mathUtils = {
+  /**
+   * Calculates the percentage difference between a guess and target value
+   *
+   * Used to determine how close a player's guess is to the actual price.
+   * Returns positive values when guess is higher, negative when lower.
+   *
+   * @param guess - The player's guessed value
+   * @param target - The actual target value
+   * @returns Percentage difference (positive = guess too high, negative = too low)
+   *
+   * @example
+   * ```typescript
+   * mathUtils.calculatePercentDifference(110, 100); // returns 10 (10% too high)
+   * mathUtils.calculatePercentDifference(90, 100);  // returns -10 (10% too low)
+   * ```
+   */
   calculatePercentDifference(guess: number, target: number): number {
     if (target === 0) return guess === 0 ? 0 : Infinity;
     return ((guess * 100) / (target * 100)) * 100 - 100;
@@ -373,7 +455,9 @@ export const utils = {
       if (!inThrottle) {
         func(...args);
         inThrottle = true;
-        setTimeout(() => { inThrottle = false; }, limit);
+        setTimeout(() => {
+          inThrottle = false;
+        }, limit);
       }
     };
   },
@@ -437,10 +521,7 @@ export const errorUtils = {
     }
   },
 
-  safeAsync<T>(
-    asyncFn: () => Promise<T>,
-    fallback: T
-  ): Promise<T> {
+  safeAsync<T>(asyncFn: () => Promise<T>, fallback: T): Promise<T> {
     return asyncFn().catch((error: unknown) => {
       this.handleError(error, 'safeAsync');
       return fallback;

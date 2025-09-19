@@ -46,14 +46,12 @@ const CDN_ASSETS = [
 ];
 
 // Network-first resources
-const NETWORK_FIRST = [
-  '/games.json'
-];
+const NETWORK_FIRST = ['/games.json'];
 
 /**
  * Service Worker Installation
  */
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   console.log('🔧 Service Worker: Installing...');
 
   event.waitUntil(
@@ -71,7 +69,7 @@ self.addEventListener('install', (event) => {
 /**
  * Service Worker Activation
  */
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   console.log('✅ Service Worker: Activating...');
 
   event.waitUntil(
@@ -87,7 +85,7 @@ self.addEventListener('activate', (event) => {
 /**
  * Fetch Event Handler
  */
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -115,7 +113,7 @@ self.addEventListener('fetch', (event) => {
 /**
  * Background Sync for game data updates
  */
-self.addEventListener('sync', (event) => {
+self.addEventListener('sync', event => {
   if (event.tag === 'background-sync-games') {
     event.waitUntil(updateGameData());
   }
@@ -124,7 +122,7 @@ self.addEventListener('sync', (event) => {
 /**
  * Push notification handler (for future features)
  */
-self.addEventListener('push', (event) => {
+self.addEventListener('push', event => {
   const options = {
     body: event.data ? event.data.text() : 'New Costcodle available!',
     icon: '/public/favicon-32x32.png',
@@ -134,20 +132,16 @@ self.addEventListener('push', (event) => {
     }
   };
 
-  event.waitUntil(
-    self.registration.showNotification('Costcodle', options)
-  );
+  event.waitUntil(self.registration.showNotification('Costcodle', options));
 });
 
 /**
  * Notification click handler
  */
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   event.notification.close();
 
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || '/')
-  );
+  event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
 });
 
 /**
@@ -156,16 +150,16 @@ self.addEventListener('notificationclick', (event) => {
 async function cacheStaticAssets() {
   try {
     const cache = await caches.open(STATIC_CACHE);
-    const responses = await Promise.allSettled(
-      STATIC_ASSETS.map(url => cache.add(url))
-    );
+    const responses = await Promise.allSettled(STATIC_ASSETS.map(url => cache.add(url)));
 
     const failed = responses.filter(r => r.status === 'rejected');
     if (failed.length > 0) {
       console.warn('Failed to cache some static assets:', failed);
     }
 
-    console.log(`✅ Cached ${STATIC_ASSETS.length - failed.length}/${STATIC_ASSETS.length} static assets`);
+    console.log(
+      `✅ Cached ${STATIC_ASSETS.length - failed.length}/${STATIC_ASSETS.length} static assets`
+    );
   } catch (error) {
     console.error('❌ Failed to cache static assets:', error);
   }
@@ -177,9 +171,7 @@ async function cacheStaticAssets() {
 async function cacheCDNAssets() {
   try {
     const cache = await caches.open(STATIC_CACHE);
-    const responses = await Promise.allSettled(
-      CDN_ASSETS.map(url => cache.add(url))
-    );
+    const responses = await Promise.allSettled(CDN_ASSETS.map(url => cache.add(url)));
 
     const failed = responses.filter(r => r.status === 'rejected');
     if (failed.length > 0) {
@@ -286,14 +278,16 @@ async function staleWhileRevalidateStrategy(request) {
   const cachedResponse = await cache.match(request);
 
   // Update cache in background
-  const fetchPromise = fetch(request).then(response => {
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  }).catch(error => {
-    console.log('Background fetch failed:', request.url);
-  });
+  const fetchPromise = fetch(request)
+    .then(response => {
+      if (response.ok) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    })
+    .catch(error => {
+      console.log('Background fetch failed:', request.url);
+    });
 
   // Return cached response immediately, or wait for network if no cache
   if (cachedResponse) {
@@ -327,8 +321,10 @@ async function updateGameData() {
  * Utility: Check if request is for a page
  */
 function isPageRequest(request) {
-  return request.mode === 'navigate' ||
-         (request.method === 'GET' && request.headers.get('accept').includes('text/html'));
+  return (
+    request.mode === 'navigate' ||
+    (request.method === 'GET' && request.headers.get('accept').includes('text/html'))
+  );
 }
 
 /**
@@ -343,7 +339,7 @@ async function getCacheSize(cacheName) {
 /**
  * Message handler for communication with main thread
  */
-self.addEventListener('message', (event) => {
+self.addEventListener('message', event => {
   const { type, data } = event.data;
 
   switch (type) {

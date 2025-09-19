@@ -95,11 +95,11 @@ export interface DOMElements {
 
 // Event types
 export interface GameEvents {
-  'stateChange': (newState: AppState, oldState: AppState) => void;
-  'gameWon': (guesses: number) => void;
-  'gameLost': () => void;
-  'guessAdded': (guess: Guess) => void;
-  'modeChanged': (isArchiveMode: boolean) => void;
+  stateChange: (newState: AppState, oldState: AppState) => void;
+  gameWon: (guesses: number) => void;
+  gameLost: () => void;
+  guessAdded: (guess: Guess) => void;
+  modeChanged: (isArchiveMode: boolean) => void;
 }
 
 // Service Worker types

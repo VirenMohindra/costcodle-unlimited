@@ -25,12 +25,12 @@ export const gameData = {
     try {
       stateManager.setLoading(true);
 
-      const response = await fetch("./games.json");
+      const response = await fetch('./games.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const json = await response.json() as Record<string, unknown>;
+      const json = (await response.json()) as Record<string, unknown>;
       const gameKey = `game-${gameNumber}`;
       const gameData = json[gameKey] as any;
 
@@ -60,7 +60,6 @@ export const gameData = {
         price: priceNumber,
         image: gameData.image as string
       };
-
     } catch (error) {
       console.error('Failed to load game data:', error);
       ui.displayError(ERROR_MESSAGES.NETWORK_ERROR);
@@ -101,9 +100,6 @@ export const gameMechanics = {
     const gameState = stateManager.getGameState();
     guessDisplay.displayGuess(guess, undefined, gameState.guesses.length);
 
-    // Update game stats
-    this.updateGameStats();
-
     // Check win/lose conditions
     if (guess.closeness === CSS_CLASSES.GUESS_STATES.WIN) {
       this.handleGameWon();
@@ -113,6 +109,9 @@ export const gameMechanics = {
       // Show shake animation for incorrect guess
       ui.shakeInfoCard();
     }
+
+    // Update game stats after win/lose state is set
+    this.updateGameStats();
 
     return true;
   },
@@ -236,7 +235,6 @@ export const gameInitializer = {
 
       // Setup event listeners
       this.setupEventListeners();
-
     } catch (error) {
       console.error('Failed to start game:', error);
     }
@@ -337,10 +335,10 @@ export const gameInitializer = {
     const statButton = document.getElementById('stat-button');
 
     if (infoButton) {
-      infoButton.addEventListener('click', (event) => modalManager.handleModalToggle(event));
+      infoButton.addEventListener('click', event => modalManager.handleModalToggle(event));
     }
     if (statButton) {
-      statButton.addEventListener('click', (event) => modalManager.handleModalToggle(event));
+      statButton.addEventListener('click', event => modalManager.handleModalToggle(event));
     }
   },
 
@@ -353,30 +351,42 @@ export const gameInitializer = {
   },
 
   addArchiveNavigation(): void {
-    const navContainer = document.getElementById("archive-nav");
+    const navContainer = document.getElementById('archive-nav');
 
     if (!navContainer) {
       // Create navigation container if it doesn't exist
-      const container = htmlUtils.createElement("div");
-      container.id = "archive-nav";
-      container.className = "practice-navigation";
+      const container = htmlUtils.createElement('div');
+      container.id = 'archive-nav';
+      container.className = 'practice-navigation';
 
       const selectedGameNumber = stateManager.get('selectedGameNumber');
       const todayGameNumber = dateUtils.getGameNumber();
 
-      const prevBtn = htmlUtils.createElement("button", "← Previous Day", "practice-nav-btn") as HTMLButtonElement;
+      const prevBtn = htmlUtils.createElement(
+        'button',
+        '← Previous Day',
+        'practice-nav-btn'
+      ) as HTMLButtonElement;
       prevBtn.onclick = () => this.navigateArchiveGame(-1);
       prevBtn.disabled = selectedGameNumber <= 1;
 
-      const gameInfo = htmlUtils.createElement("span", "", "practice-game-info");
+      const gameInfo = htmlUtils.createElement('span', '', 'practice-game-info');
       const gameDate = dateUtils.getDateForGameNumber(selectedGameNumber);
       gameInfo.textContent = gameDate;
 
-      const nextBtn = htmlUtils.createElement("button", "Next Day →", "practice-nav-btn") as HTMLButtonElement;
+      const nextBtn = htmlUtils.createElement(
+        'button',
+        'Next Day →',
+        'practice-nav-btn'
+      ) as HTMLButtonElement;
       nextBtn.onclick = () => this.navigateArchiveGame(1);
       nextBtn.disabled = selectedGameNumber >= todayGameNumber;
 
-      const todayBtn = htmlUtils.createElement("button", "📅 Today", "practice-nav-btn random-btn") as HTMLButtonElement;
+      const todayBtn = htmlUtils.createElement(
+        'button',
+        '📅 Today',
+        'practice-nav-btn random-btn'
+      ) as HTMLButtonElement;
       todayBtn.onclick = () => this.navigateToToday();
 
       container.appendChild(prevBtn);
@@ -384,7 +394,7 @@ export const gameInitializer = {
       container.appendChild(nextBtn);
       container.appendChild(todayBtn);
 
-      const gameContainer = document.getElementById("game-container");
+      const gameContainer = document.getElementById('game-container');
       if (gameContainer && gameContainer.firstChild) {
         gameContainer.insertBefore(container, gameContainer.firstChild.nextSibling);
       }
@@ -516,9 +526,8 @@ export const modalManager = {
     userStats.winsInNum.forEach((value, index) => {
       const graphElement = document.getElementById(`graph-${index + 1}`);
       if (graphElement) {
-        const percentage = userStats.numWins === 0
-          ? 5
-          : Math.floor((value / userStats.numWins) * 0.95 * 100) + 5;
+        const percentage =
+          userStats.numWins === 0 ? 5 : Math.floor((value / userStats.numWins) * 0.95 * 100) + 5;
 
         graphElement.style.width = `${percentage}%`;
         graphElement.textContent = value.toString();
@@ -550,18 +559,18 @@ export const shareManager = {
     // Add guess results
     gameState.guesses.forEach(({ direction, closeness }) => {
       const directionEmoji: Record<string, string> = {
-        "&uarr;": "⬆️",
-        "&darr;": "⬇️",
-        "&check;": "✅"
+        '&uarr;': '⬆️',
+        '&darr;': '⬇️',
+        '&check;': '✅'
       };
 
       const closenessEmoji: Record<string, string> = {
-        "guess-far": "🟥",
-        "guess-near": "🟨"
+        'guess-far': '🟥',
+        'guess-near': '🟨'
       };
 
-      const dirSymbol = directionEmoji[direction] || "";
-      const closeSymbol = closenessEmoji[closeness] || "";
+      const dirSymbol = directionEmoji[direction] || '';
+      const closeSymbol = closenessEmoji[closeness] || '';
 
       output += `${dirSymbol}${closeSymbol}\n`;
     });
@@ -580,9 +589,9 @@ export const shareManager = {
     if (capabilities.isMobile && capabilities.supportsShare) {
       try {
         await navigator.share({
-          title: "COSTCODLE",
+          title: 'COSTCODLE',
           text: output,
-          url: "https://costcodle.com",
+          url: 'https://costcodle.com'
         });
         return;
       } catch (error) {
@@ -610,7 +619,7 @@ export const shareManager = {
   },
 
   fallbackCopy(text: string): void {
-    const textArea = document.createElement("textarea");
+    const textArea = document.createElement('textarea');
     textArea.value = text;
     document.body.appendChild(textArea);
     textArea.select();

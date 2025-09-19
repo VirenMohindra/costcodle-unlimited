@@ -54,15 +54,20 @@ class StateManager implements IStateManager {
   private loadFromStorage(): void {
     // Load archive mode
     const archiveModeValue = storage.get(GAME_CONFIG.STORAGE_KEYS.ARCHIVE_MODE, false);
-    this.state.isArchiveMode = typeof archiveModeValue === 'string' ? archiveModeValue === "true" : Boolean(archiveModeValue);
+    this.state.isArchiveMode =
+      typeof archiveModeValue === 'string'
+        ? archiveModeValue === 'true'
+        : Boolean(archiveModeValue);
 
     // Load selected game number
-    this.state.selectedGameNumber = parseInt(
-      storage.get(GAME_CONFIG.STORAGE_KEYS.SELECTED_GAME_NUMBER, "1") as string
-    ) || 1;
+    this.state.selectedGameNumber =
+      parseInt(storage.get(GAME_CONFIG.STORAGE_KEYS.SELECTED_GAME_NUMBER, '1') as string) || 1;
 
     // Load game state
-    const savedGameState = storage.get(GAME_CONFIG.STORAGE_KEYS.GAME_STATE, {}) as Partial<GameState>;
+    const savedGameState = storage.get(
+      GAME_CONFIG.STORAGE_KEYS.GAME_STATE,
+      {}
+    ) as Partial<GameState>;
     this.state.gameState = {
       gameNumber: savedGameState.gameNumber ?? DEFAULT_GAME_STATE.gameNumber,
       guesses: savedGameState.guesses ?? [],
@@ -70,7 +75,10 @@ class StateManager implements IStateManager {
     };
 
     // Load user stats
-    const savedUserStats = storage.get(GAME_CONFIG.STORAGE_KEYS.USER_STATS, {}) as Partial<UserStats>;
+    const savedUserStats = storage.get(
+      GAME_CONFIG.STORAGE_KEYS.USER_STATS,
+      {}
+    ) as Partial<UserStats>;
     this.state.userStats = {
       numGames: savedUserStats.numGames ?? DEFAULT_USER_STATS.numGames,
       numWins: savedUserStats.numWins ?? DEFAULT_USER_STATS.numWins,
@@ -104,7 +112,11 @@ class StateManager implements IStateManager {
     }
   }
 
-  private notify<K extends keyof AppState>(key: K, newValue: AppState[K], oldValue?: AppState[K]): void {
+  private notify<K extends keyof AppState>(
+    key: K,
+    newValue: AppState[K],
+    oldValue?: AppState[K]
+  ): void {
     if (this.subscribers.has(key)) {
       this.subscribers.get(key)!.forEach(callback => {
         (callback as StateSubscriber<AppState[K]>)(newValue, oldValue!);
@@ -283,13 +295,15 @@ class StateManager implements IStateManager {
 
   // Computed properties
   get canGuess(): boolean {
-    return this.state.gameState.guesses.length < GAME_CONFIG.MAX_GUESSES &&
-           !this.state.gameState.hasWon;
+    return (
+      this.state.gameState.guesses.length < GAME_CONFIG.MAX_GUESSES && !this.state.gameState.hasWon
+    );
   }
 
   get gameComplete(): boolean {
-    return this.state.gameState.hasWon ||
-           this.state.gameState.guesses.length >= GAME_CONFIG.MAX_GUESSES;
+    return (
+      this.state.gameState.hasWon || this.state.gameState.guesses.length >= GAME_CONFIG.MAX_GUESSES
+    );
   }
 
   get winPercentage(): number {

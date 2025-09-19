@@ -1,0 +1,39 @@
+# Build outputs
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Generated files
+coverage/
+*.min.js
+*.min.css
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+# Documentation
+CHANGELOG.md
+LICENSE
+README.md
+
+# Config files (already formatted)
+package.json
+package-lock.json
+tsconfig.json
+vitest.config.ts
+
+# Assets
+assets/
+public/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.webp

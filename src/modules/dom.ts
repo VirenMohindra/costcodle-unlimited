@@ -20,7 +20,7 @@ class DOMCache {
   private cacheElements(): void {
     Object.entries(SELECTORS).forEach(([key, selector]) => {
       const element = selector.startsWith('.')
-        ? document.querySelector(selector) as HTMLElement | null
+        ? (document.querySelector(selector) as HTMLElement | null)
         : document.getElementById(selector);
 
       if (element) {
@@ -37,7 +37,7 @@ class DOMCache {
     if (key) {
       const selector = SELECTORS[key];
       const element = selector.startsWith('.')
-        ? document.querySelector(selector) as HTMLElement | null
+        ? (document.querySelector(selector) as HTMLElement | null)
         : document.getElementById(selector);
 
       if (element) {
@@ -58,16 +58,15 @@ export const domCache = new DOMCache();
 export const ui = {
   // Toast notifications
   async showToast(message: string | null = null, type: ToastType = 'share'): Promise<void> {
-    const toastElement = type === 'warning'
-      ? domCache.get('WARNING_TOAST')
-      : domCache.get('SHARE_TOAST');
+    const toastElement =
+      type === 'warning' ? domCache.get('WARNING_TOAST') : domCache.get('SHARE_TOAST');
 
     if (!toastElement) return;
 
     // Update message if provided
     if (message) {
-      const textElement = toastElement.querySelector('.toast-text') ||
-                         toastElement.querySelector('center');
+      const textElement =
+        toastElement.querySelector('.toast-text') || toastElement.querySelector('center');
       if (textElement) {
         textElement.textContent = message;
       }
@@ -173,11 +172,7 @@ export const ui = {
   async shakeInfoCard(): Promise<void> {
     const infoCard = domCache.get('INFO_CARD');
     if (infoCard) {
-      await animationUtils.addTemporaryClass(
-        infoCard,
-        CSS_CLASSES.ANIMATIONS.HEAD_SHAKE,
-        1000
-      );
+      await animationUtils.addTemporaryClass(infoCard, CSS_CLASSES.ANIMATIONS.HEAD_SHAKE, 1000);
     }
   },
 
@@ -225,10 +220,16 @@ export const guessDisplay = {
 
     if (!guessContainer) return;
 
-    const guessValueContainer = htmlUtils.createElement('div', '',
-      `guess-value-container ${CSS_CLASSES.ANIMATIONS.FLIP_IN}`);
-    const infoContainer = htmlUtils.createElement('div', '',
-      `guess-direction-container ${CSS_CLASSES.ANIMATIONS.FLIP_IN}`);
+    const guessValueContainer = htmlUtils.createElement(
+      'div',
+      '',
+      `guess-value-container ${CSS_CLASSES.ANIMATIONS.FLIP_IN}`
+    );
+    const infoContainer = htmlUtils.createElement(
+      'div',
+      '',
+      `guess-direction-container ${CSS_CLASSES.ANIMATIONS.FLIP_IN}`
+    );
 
     guessValueContainer.textContent = `$${guess.guess}`;
     infoContainer.classList.add(guess.closeness);
@@ -318,9 +319,7 @@ export const keyboard = {
   },
 
   closeModal(type: ModalType): void {
-    const button = type === 'info'
-      ? domCache.get('INFO_BUTTON')
-      : domCache.get('STAT_BUTTON');
+    const button = type === 'info' ? domCache.get('INFO_BUTTON') : domCache.get('STAT_BUTTON');
 
     if (button) {
       // Simulate click to trigger existing close logic
