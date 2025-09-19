@@ -252,15 +252,25 @@ class CostcodleApp {
     const modeIndicator = document.querySelector('.mode-indicator') as HTMLElement | null;
 
     if (modeToggle && modeText && modeIndicator) {
-      if (isArchiveMode) {
-        modeToggle.classList.add('practice-mode');
-        modeText.textContent = 'Archive Mode';
-        modeIndicator.textContent = '📅';
-      } else {
-        modeToggle.classList.remove('practice-mode');
-        modeText.textContent = 'Daily Challenge';
-        modeIndicator.textContent = '🎯';
-      }
+      // Add a brief fade effect to smooth the transition
+      modeText.style.opacity = '0.5';
+      modeIndicator.style.opacity = '0.5';
+
+      setTimeout(() => {
+        if (isArchiveMode) {
+          modeToggle.classList.add('practice-mode');
+          modeText.textContent = 'Archive Mode';
+          modeIndicator.textContent = '📅';
+        } else {
+          modeToggle.classList.remove('practice-mode');
+          modeText.textContent = 'Daily Challenge';
+          modeIndicator.textContent = '🎯';
+        }
+
+        // Restore opacity
+        modeText.style.opacity = '1';
+        modeIndicator.style.opacity = '1';
+      }, 150);
     }
   }
 

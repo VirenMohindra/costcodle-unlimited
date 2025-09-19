@@ -105,3 +105,154 @@
   height: 26px;
   margin-bottom: 15px;
 }
+
+/* Calendar overlay styles */
+#calendar-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: gainsboro;
+  width: 380px;
+  padding: 0 10px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.calendar-nav-btn {
+  font-family: "VT323", monospace;
+  font-size: 30px;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgb(0, 96, 169);
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+  background-color: rgba(0, 96, 169, 0.1);
+}
+
+.calendar-month-display {
+  font-family: "VT323", monospace;
+  font-size: 28px;
+  font-weight: bold;
+  color: rgb(227, 42, 54);
+}
+
+.calendar-grid {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 5px;
+}
+
+.calendar-weekday {
+  font-family: "VT323", monospace;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 4px;
+  color: rgb(0, 96, 169);
+  background-color: rgba(0, 96, 169, 0.1);
+  border-radius: 4px;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
+  font-family: "VT323", monospace;
+  font-size: 18px;
+  text-align: center;
+  padding: 8px 4px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.calendar-day:hover {
+  background-color: rgba(0, 96, 169, 0.1);
+  transform: scale(1.05);
+}
+
+.calendar-day.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.calendar-day.disabled:hover {
+  transform: none;
+  background-color: #f5f5f5;
+}
+
+.calendar-day.other-month {
+  color: #999;
+  background-color: #f9f9f9;
+}
+
+.calendar-day.today {
+  background-color: rgb(227, 42, 54);
+  color: white;
+  font-weight: bold;
+}
+
+.calendar-day.completed {
+  background-color: rgb(1, 154, 1);
+  color: white;
+}
+
+.calendar-day.current-game {
+  background-color: rgb(0, 96, 169);
+  color: white;
+  font-weight: bold;
+}
+
+.calendar-footer {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.calendar-action-btn {
+  font-family: "VT323", monospace;
+  font-size: 20px;
+  background-color: rgb(0, 96, 169);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.calendar-action-btn:hover {
+  background-color: rgb(0, 80, 140);
+  transform: scale(1.05);
+}

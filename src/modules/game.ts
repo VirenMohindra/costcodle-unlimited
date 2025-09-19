@@ -329,12 +329,16 @@ export const gameInitializer = {
   addModalListeners(): void {
     const infoButton = document.getElementById('info-button');
     const statButton = document.getElementById('stat-button');
+    const calendarButton = document.getElementById('calendar-button');
 
     if (infoButton) {
       infoButton.addEventListener('click', event => modalManager.handleModalToggle(event));
     }
     if (statButton) {
       statButton.addEventListener('click', event => modalManager.handleModalToggle(event));
+    }
+    if (calendarButton) {
+      calendarButton.addEventListener('click', event => modalManager.handleModalToggle(event));
     }
   },
 
@@ -451,6 +455,8 @@ export const modalManager = {
       this.renderInfoModal();
     } else if (overlayId === 'stats-overlay') {
       this.renderStatsModal();
+    } else if (overlayId === 'calendar-overlay') {
+      this.renderCalendarModal();
     }
   },
 
@@ -529,6 +535,154 @@ export const modalManager = {
         graphElement.textContent = value.toString();
       }
     });
+  },
+
+  renderCalendarModal(): void {
+    const title = document.getElementById('title');
+    if (title) {
+      title.innerHTML = `GAME <span class="costco-blue">CALENDAR</span>`;
+    }
+
+    this.initializeCalendar();
+  },
+
+  initializeCalendar(): void {
+    const calendarState = {
+      currentDate: new Date(),
+      selectedDate: new Date(),
+      today: new Date()
+    };
+
+    this.renderCalendarMonth(calendarState);
+    this.setupCalendarListeners(calendarState);
+  },
+
+  renderCalendarMonth(calendarState: { currentDate: Date; selectedDate: Date; today: Date }): void {
+    const monthYearElement = document.getElementById('calendar-month-year');
+    const calendarDaysElement = document.getElementById('calendar-days');
+
+    if (!monthYearElement || !calendarDaysElement) return;
+
+    // Set month/year display
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long' };
+    monthYearElement.textContent = calendarState.currentDate.toLocaleDateString('en-US', options);
+
+    // Clear existing days
+    calendarDaysElement.innerHTML = '';
+
+    // Get first day of month and number of days
+    const firstDay = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth(), 1);
+    const lastDay = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth() + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    // Add empty cells for days before month starts
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      const emptyDay = document.createElement('div');
+      emptyDay.className = 'calendar-day other-month';
+      calendarDaysElement.appendChild(emptyDay);
+    }
+
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayElement = document.createElement('div');
+      dayElement.className = 'calendar-day';
+      dayElement.textContent = day.toString();
+
+      const currentDate = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth(), day);
+      const gameNumber = this.dateToGameNumber(currentDate);
+      const todayGameNumber = dateUtils.getGameNumber();
+
+      // Add appropriate classes
+      if (this.isSameDay(currentDate, calendarState.today)) {
+        dayElement.classList.add('today');
+      }
+
+      if (gameNumber > todayGameNumber) {
+        dayElement.classList.add('disabled');
+      } else {
+        // Check if game was completed (this would need to be implemented with actual game state)
+        const isCompleted = this.isGameCompleted(gameNumber);
+        if (isCompleted) {
+          dayElement.classList.add('completed');
+        }
+
+        // Add click listener for valid days
+        dayElement.addEventListener('click', () => {
+          this.selectCalendarDate(gameNumber);
+        });
+      }
+
+      calendarDaysElement.appendChild(dayElement);
+    }
+  },
+
+  setupCalendarListeners(calendarState: { currentDate: Date; selectedDate: Date; today: Date }): void {
+    const prevButton = document.getElementById('prev-month');
+    const nextButton = document.getElementById('next-month');
+    const todayButton = document.getElementById('today-btn');
+    const randomButton = document.getElementById('random-game-btn');
+
+    if (prevButton) {
+      prevButton.addEventListener('click', () => {
+        calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() - 1);
+        this.renderCalendarMonth(calendarState);
+      });
+    }
+
+    if (nextButton) {
+      nextButton.addEventListener('click', () => {
+        calendarState.currentDate.setMonth(calendarState.currentDate.getMonth() + 1);
+        this.renderCalendarMonth(calendarState);
+      });
+    }
+
+    if (todayButton) {
+      todayButton.addEventListener('click', () => {
+        // Switch to daily mode by toggling if currently in archive mode
+        if (stateManager.get('isArchiveMode')) {
+          stateManager.toggleArchiveMode();
+        }
+        this.closeAllModals();
+        location.reload();
+      });
+    }
+
+    if (randomButton) {
+      randomButton.addEventListener('click', () => {
+        const randomGameNumber = Math.floor(Math.random() * dateUtils.getGameNumber()) + 1;
+        this.selectCalendarDate(randomGameNumber);
+      });
+    }
+  },
+
+  selectCalendarDate(gameNumber: number): void {
+    // Switch to archive mode if not already in it
+    if (!stateManager.get('isArchiveMode')) {
+      stateManager.toggleArchiveMode();
+    }
+    stateManager.setSelectedGameNumber(gameNumber);
+    this.closeAllModals();
+    location.reload();
+  },
+
+  dateToGameNumber(date: Date): number {
+    const startDate = new Date('09/21/2023');
+    const timeDifference = date.getTime() - startDate.getTime();
+    const dayDifference = timeDifference / (1000 * 3600 * 24);
+    return Math.ceil(dayDifference);
+  },
+
+  isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
+  },
+
+  isGameCompleted(_gameNumber: number): boolean {
+    // TODO: Implement actual game completion tracking
+    // This would check localStorage for completed games
+    return false;
   }
 };
 
