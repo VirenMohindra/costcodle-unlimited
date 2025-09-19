@@ -65,59 +65,66 @@
       rel="stylesheet"
     />
 
+    <!-- Legacy jQuery for searchBar.js compatibility -->
     <script
       src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"
       defer
     ></script>
 
-    <script src="scripts/main.js" defer></script>
+    <!-- Currency input formatting (legacy) -->
     <script src="scripts/searchBar.js" defer></script>
+
+    <!-- TypeScript compiled application -->
+    <script type="module" src="scripts/main.js"></script>
   </head>
 
   <body>
+    <a href="#game-container" class="skip-link">Skip to main content</a>
     <div id="main-page">
       <header id="site-header">
         <div id="header-container">
-          <button id="info-button" data-overlay="info-overlay" type="button">
+          <button id="info-button" data-overlay="info-overlay" type="button" aria-label="Open game instructions" title="How to play">
             ?
           </button>
           <h1 id="title" class="title costco-red">
             <center>COSTCO<span class="costco-blue">DLE</span></center>
           </h1>
-          <button id="stat-button" data-overlay="stats-overlay" type="button">
+          <button id="stat-button" data-overlay="stats-overlay" type="button" aria-label="View game statistics" title="Statistics">
             <img
               src="./assets/stat-logo.svg"
               style="height: 100%; width: 100%"
+              alt="Statistics icon"
+              role="img"
             />
           </button>
         </div>
         <div id="mode-toggle-container">
-          <button id="mode-toggle" class="mode-toggle">
+          <button id="mode-toggle" class="mode-toggle" aria-label="Toggle between daily challenge and archive mode" title="Switch game mode">
             <span id="mode-text">Daily Challenge</span>
-            <span class="mode-indicator">🎯</span>
+            <span class="mode-indicator" aria-hidden="true">🎯</span>
           </button>
         </div>
       </header>
 
-      <main id="game-container">
-        <div id="share-toast" class="animate__animated hide">
-          <center>Results copied to clipboard</center>
+      <main id="game-container" role="main" aria-label="Costcodle game">
+        <div id="share-toast" class="animate__animated hide" role="alert" aria-live="polite">
+          <center><span class="toast-text">Results copied to clipboard</span></center>
         </div>
-        <div id="info-card" class="animate__animated">
-          <div id="image-container"></div>
-          <div id="product-info"></div>
+        <div id="info-card" class="animate__animated" role="img" aria-label="Product to guess">
+          <div id="image-container" role="img"></div>
+          <div id="product-info" aria-live="polite"></div>
         </div>
-        <div id="game-stats"></div>
-        <div id="guesses-container">
-          <div id="warning-toast" class="animate__animated hide">
+        <div id="game-stats" aria-live="polite" aria-label="Game progress and results"></div>
+        <div id="guesses-container" role="group" aria-label="Guess attempts">
+          <div id="warning-toast" class="animate__animated hide" role="alert" aria-live="assertive">
             <center>Invalid Guess ⚠️</center>
           </div>
-          <div id="1" class="guess-container"></div>
-          <div id="2" class="guess-container"></div>
-          <div id="3" class="guess-container"></div>
-          <div id="4" class="guess-container"></div>
-          <div id="5" class="guess-container"></div>
-          <div id="6" class="guess-container"></div>
+          <div id="1" class="guess-container" aria-label="Guess 1" role="group"></div>
+          <div id="2" class="guess-container" aria-label="Guess 2" role="group"></div>
+          <div id="3" class="guess-container" aria-label="Guess 3" role="group"></div>
+          <div id="4" class="guess-container" aria-label="Guess 4" role="group"></div>
+          <div id="5" class="guess-container" aria-label="Guess 5" role="group"></div>
+          <div id="6" class="guess-container" aria-label="Guess 6" role="group"></div>
           <div
             id="input-container"
             class="guess-container transparent-background"
@@ -130,15 +137,19 @@
                 pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
                 data-type="currency"
                 placeholder="Enter a guess..."
+                aria-label="Enter your price guess"
+                aria-describedby="input-label"
+                role="textbox"
               />
             </div>
             <div id="button-container">
-              <button id="guess-button" class="active">SUBMIT</button>
+              <button id="guess-button" class="active" aria-label="Submit your price guess" type="submit">SUBMIT</button>
             </div>
           </div>
         </div>
-        <div id="info-overlay" class="overlay" style="display: none">
+        <div id="info-overlay" class="overlay" style="display: none" role="dialog" aria-modal="true" aria-labelledby="info-title" aria-hidden="true">
           <div id="info-body" class="overlay-body">
+            <h2 id="info-title" class="sr-only" tabindex="-1">How to Play Costcodle</h2>
             <div class="info-section">
               <h3><u>The game</u></h3>
               <p>
@@ -262,10 +273,10 @@
             </div>
           </div>
         </div>
-        <div id="stats-overlay" class="overlay" style="display: none">
+        <div id="stats-overlay" class="overlay" style="display: none" role="dialog" aria-modal="true" aria-labelledby="stats-title" aria-hidden="true">
           <div id="stat-body" class="overlay-body">
-            <p id="statistics-title">STATISTICS</p>
-            <div id="statistics">
+            <h2 id="stats-title" tabindex="-1">STATISTICS</h2>
+            <div id="statistics" role="group" aria-label="Game statistics">
               <div class="statistic">
                 <div id="number-wins" class="stat"></div>
                 <div class="descriptor">Played</div>
@@ -287,31 +298,31 @@
                 </div>
               </div>
             </div>
-            <p>GUESS DISTRIBUTION</p>
-            <div class="graph">
-              <div class="graph-row">
+            <h3>GUESS DISTRIBUTION</h3>
+            <div class="graph" role="img" aria-label="Distribution of guesses across attempts">
+              <div class="graph-row" role="group" aria-label="Attempt 1">
                 <div class="graph-label">1</div>
-                <div id="graph-1" class="graphElem"></div>
+                <div id="graph-1" class="graphElem" aria-label="Wins in 1 guess"></div>
               </div>
-              <div class="graph-row">
+              <div class="graph-row" role="group" aria-label="Attempt 2">
                 <div class="graph-label">2</div>
-                <div id="graph-2" class="graphElem"></div>
+                <div id="graph-2" class="graphElem" aria-label="Wins in 2 guesses"></div>
               </div>
-              <div class="graph-row">
+              <div class="graph-row" role="group" aria-label="Attempt 3">
                 <div class="graph-label">3</div>
-                <div id="graph-3" class="graphElem"></div>
+                <div id="graph-3" class="graphElem" aria-label="Wins in 3 guesses"></div>
               </div>
-              <div class="graph-row">
+              <div class="graph-row" role="group" aria-label="Attempt 4">
                 <div class="graph-label">4</div>
-                <div id="graph-4" class="graphElem"></div>
+                <div id="graph-4" class="graphElem" aria-label="Wins in 4 guesses"></div>
               </div>
-              <div class="graph-row">
+              <div class="graph-row" role="group" aria-label="Attempt 5">
                 <div class="graph-label">5</div>
-                <div id="graph-5" class="graphElem"></div>
+                <div id="graph-5" class="graphElem" aria-label="Wins in 5 guesses"></div>
               </div>
-              <div class="graph-row">
+              <div class="graph-row" role="group" aria-label="Attempt 6">
                 <div class="graph-label">6</div>
-                <div id="graph-6" class="graphElem"></div>
+                <div id="graph-6" class="graphElem" aria-label="Wins in 6 guesses"></div>
               </div>
             </div>
           </div>

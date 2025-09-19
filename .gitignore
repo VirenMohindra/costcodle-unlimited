@@ -1,1 +1,13 @@
 CLAUDE.md
+
+.idea
+dist
+node_modules
+
+# TypeScript build artifacts that shouldn't be in source
+src/**/*.js
+src/**/*.js.map
+
+# Legacy artifacts
+scripts/main.js
+scripts/modules/

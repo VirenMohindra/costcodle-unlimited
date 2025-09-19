@@ -1,12 +1,53 @@
 {
   "name": "costcodle",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A Wordle-esque daily guessing game for Costco food products",
+  "type": "module",
   "scripts": {
-    "start": "npx http-server . -p 8000 -o",
-    "dev": "npx http-server . -p 8000 -o"
+    "dev": "concurrently \"npm run build:watch\" \"npm run serve\"",
+    "build": "npm run clean && npm run build:ts && npm run copy:assets",
+    "build:ts": "tsc && tsc --project tsconfig.sw.json",
+    "build:watch": "tsc --watch",
+    "copy:assets": "npm run copy:html && npm run copy:styles && npm run copy:assets:static && npm run copy:json",
+    "copy:html": "cp index.html dist/",
+    "copy:styles": "cp -r styles dist/",
+    "copy:assets:static": "cp -r assets dist/ && cp -r public dist/",
+    "copy:json": "cp games.json dist/",
+    "clean": "rm -rf dist",
+    "serve": "http-server dist -p 8000 -o",
+    "serve:prod": "http-server dist -p 8000",
+    "start": "npm run build && npm run serve:prod",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "deploy": "npm run build && gh-pages -d dist",
+    "prepare": "npm run build"
   },
-  "keywords": ["game", "wordle", "costco"],
+  "keywords": [
+    "game",
+    "wordle",
+    "costco",
+    "typescript"
+  ],
   "author": "Zachary Kermitz",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "concurrently": "^8.0.0",
+    "eslint": "^8.0.0",
+    "gh-pages": "^6.0.0",
+    "http-server": "^14.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }
