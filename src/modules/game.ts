@@ -7,12 +7,7 @@ import { GAME_CONFIG, CSS_CLASSES, DIRECTION_SYMBOLS, ERROR_MESSAGES } from './c
 import { validation, mathUtils, dateUtils, deviceUtils, htmlUtils } from './utils.js';
 import { stateManager } from './state.js';
 import { ui, guessDisplay } from './dom.js';
-import type {
-  ProcessedProductData,
-  Guess,
-  GuessCloseness,
-  GuessDirection
-} from '../types/game.js';
+import type { ProcessedProductData, Guess, GuessCloseness, GuessDirection } from '../types/game.js';
 
 /**
  * Game Data Management
@@ -571,8 +566,16 @@ export const modalManager = {
     calendarDaysElement.innerHTML = '';
 
     // Get first day of month and number of days
-    const firstDay = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth(), 1);
-    const lastDay = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth() + 1, 0);
+    const firstDay = new Date(
+      calendarState.currentDate.getFullYear(),
+      calendarState.currentDate.getMonth(),
+      1
+    );
+    const lastDay = new Date(
+      calendarState.currentDate.getFullYear(),
+      calendarState.currentDate.getMonth() + 1,
+      0
+    );
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
@@ -589,7 +592,11 @@ export const modalManager = {
       dayElement.className = 'calendar-day';
       dayElement.textContent = day.toString();
 
-      const currentDate = new Date(calendarState.currentDate.getFullYear(), calendarState.currentDate.getMonth(), day);
+      const currentDate = new Date(
+        calendarState.currentDate.getFullYear(),
+        calendarState.currentDate.getMonth(),
+        day
+      );
       const gameNumber = this.dateToGameNumber(currentDate);
       const todayGameNumber = dateUtils.getGameNumber();
 
@@ -617,7 +624,11 @@ export const modalManager = {
     }
   },
 
-  setupCalendarListeners(calendarState: { currentDate: Date; selectedDate: Date; today: Date }): void {
+  setupCalendarListeners(calendarState: {
+    currentDate: Date;
+    selectedDate: Date;
+    today: Date;
+  }): void {
     const prevButton = document.getElementById('prev-month');
     const nextButton = document.getElementById('next-month');
     const todayButton = document.getElementById('today-btn');
@@ -674,9 +685,11 @@ export const modalManager = {
   },
 
   isSameDay(date1: Date, date2: Date): boolean {
-    return date1.getDate() === date2.getDate() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getFullYear() === date2.getFullYear();
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    );
   },
 
   isGameCompleted(_gameNumber: number): boolean {
