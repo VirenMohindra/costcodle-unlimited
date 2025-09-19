@@ -1,0 +1,12 @@
+{
+  "name": "costcodle",
+  "version": "1.0.0",
+  "description": "A Wordle-esque daily guessing game for Costco food products",
+  "scripts": {
+    "start": "npx http-server . -p 8000 -o",
+    "dev": "npx http-server . -p 8000 -o"
+  },
+  "keywords": ["game", "wordle", "costco"],
+  "author": "Zachary Kermitz",
+  "license": "MIT"
+}
