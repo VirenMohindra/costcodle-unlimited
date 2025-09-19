@@ -95,11 +95,11 @@ export interface DOMElements {
 
 // Event types
 export interface GameEvents {
-  stateChange: (newState: AppState, oldState: AppState) => void;
-  gameWon: (guesses: number) => void;
+  stateChange: (_newState: AppState, _oldState: AppState) => void;
+  gameWon: (_guesses: number) => void;
   gameLost: () => void;
-  guessAdded: (guess: Guess) => void;
-  modeChanged: (isArchiveMode: boolean) => void;
+  guessAdded: (_guess: Guess) => void;
+  modeChanged: (_isArchiveMode: boolean) => void;
 }
 
 // Service Worker types
@@ -166,7 +166,7 @@ export interface GameError extends Error {
 export interface ArchiveNavigationOptions {
   gameNumber: number;
   maxGameNumber: number;
-  onNavigate?: (gameNumber: number) => void;
+  onNavigate?: (_gameNumber: number) => void;
 }
 
 // Share types
@@ -207,13 +207,13 @@ export interface GameMechanicsOptions {
 }
 
 // State manager types
-export type StateSubscriber<T = unknown> = (newValue: T, oldValue: T) => void;
+export type StateSubscriber<T = unknown> = (_newValue: T, _oldValue: T) => void;
 
 export interface StateManager {
-  get<K extends keyof AppState>(key: K): AppState[K];
-  set<K extends keyof AppState>(key: K, value: AppState[K]): void;
-  subscribe<K extends keyof AppState>(key: K, callback: StateSubscriber<AppState[K]>): void;
-  unsubscribe<K extends keyof AppState>(key: K, callback: StateSubscriber<AppState[K]>): void;
+  get<K extends keyof AppState>(_key: K): AppState[K];
+  set<K extends keyof AppState>(_key: K, _value: AppState[K]): void;
+  subscribe<K extends keyof AppState>(_key: K, _callback: StateSubscriber<AppState[K]>): void;
+  unsubscribe<K extends keyof AppState>(_key: K, _callback: StateSubscriber<AppState[K]>): void;
 }
 
 // CSS Custom Properties types

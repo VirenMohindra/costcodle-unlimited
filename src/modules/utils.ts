@@ -253,7 +253,7 @@ export const deviceUtils = {
   isMobile(): boolean {
     return (
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-      (navigator.maxTouchPoints != null && navigator.maxTouchPoints > 2)
+      (navigator.maxTouchPoints !== null && navigator.maxTouchPoints > 2)
     );
   },
 
@@ -431,29 +431,29 @@ export const mathUtils = {
  * General utility functions
  */
 export const utils = {
-  debounce<T extends (...args: unknown[]) => void>(
+  debounce<T extends (..._args: unknown[]) => void>(
     func: T,
     wait: number
-  ): (...args: Parameters<T>) => void {
+  ): (..._args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout>;
-    return (...args: Parameters<T>): void => {
+    return (..._args: Parameters<T>): void => {
       const later = (): void => {
         clearTimeout(timeout);
-        func(...args);
+        func(..._args);
       };
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
     };
   },
 
-  throttle<T extends (...args: unknown[]) => void>(
+  throttle<T extends (..._args: unknown[]) => void>(
     func: T,
     limit: number
-  ): (...args: Parameters<T>) => void {
+  ): (..._args: Parameters<T>) => void {
     let inThrottle: boolean;
-    return (...args: Parameters<T>): void => {
+    return (..._args: Parameters<T>): void => {
       if (!inThrottle) {
-        func(...args);
+        func(..._args);
         inThrottle = true;
         setTimeout(() => {
           inThrottle = false;
@@ -483,7 +483,7 @@ export const utils = {
   },
 
   isEmpty(value: unknown): boolean {
-    if (value == null) return true;
+    if (value === null || value === undefined) return true;
     if (typeof value === 'string' || Array.isArray(value)) return value.length === 0;
     if (typeof value === 'object') return Object.keys(value).length === 0;
     return false;

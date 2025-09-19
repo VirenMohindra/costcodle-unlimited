@@ -175,11 +175,11 @@ export const CSS_PROPERTIES: CSSCustomProperties = {
 
 // Type guards
 export const isGuessCloseness = (value: string): value is keyof typeof CSS_CLASSES.GUESS_STATES => {
-  return Object.values(CSS_CLASSES.GUESS_STATES).includes(value as any);
+  return (Object.values(CSS_CLASSES.GUESS_STATES) as string[]).includes(value);
 };
 
 export const isGuessDirection = (value: string): value is keyof typeof DIRECTION_SYMBOLS => {
-  return Object.values(DIRECTION_SYMBOLS).includes(value as any);
+  return (Object.values(DIRECTION_SYMBOLS) as string[]).includes(value);
 };
 
 // Utility types for better type safety

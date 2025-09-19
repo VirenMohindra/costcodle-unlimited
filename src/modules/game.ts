@@ -11,10 +11,7 @@ import type {
   ProcessedProductData,
   Guess,
   GuessCloseness,
-  GuessDirection,
-  ModalType,
-  UserStats,
-  GameState
+  GuessDirection
 } from '../types/game.js';
 
 /**
@@ -32,7 +29,7 @@ export const gameData = {
 
       const json = (await response.json()) as Record<string, unknown>;
       const gameKey = `game-${gameNumber}`;
-      const gameData = json[gameKey] as any;
+      const gameData = json[gameKey] as Record<string, unknown>;
 
       if (!gameData) {
         throw new Error(`Game data not found for game ${gameNumber}`);
@@ -149,7 +146,6 @@ export const gameMechanics = {
   },
 
   updateGameStats(): void {
-    const state = stateManager.get as any; // Temporary workaround for state access
     const gameState = stateManager.getGameState();
     const productPrice = stateManager.get('productPrice');
     const isArchiveMode = stateManager.get('isArchiveMode');
@@ -216,7 +212,7 @@ export const gameMechanics = {
  * Game Initialization
  */
 export const gameInitializer = {
-  inputKeyHandler: null as ((event: KeyboardEvent) => void) | null,
+  inputKeyHandler: null as ((_event: KeyboardEvent) => void) | null,
 
   async startGame(): Promise<void> {
     try {
@@ -594,7 +590,7 @@ export const shareManager = {
           url: 'https://costcodle.com'
         });
         return;
-      } catch (error) {
+      } catch {
         // Fall through to clipboard
       }
     }
@@ -610,7 +606,7 @@ export const shareManager = {
       try {
         await navigator.clipboard.writeText(text);
         ui.showToast('Results copied to clipboard');
-      } catch (error) {
+      } catch {
         this.fallbackCopy(text);
       }
     } else {
@@ -627,7 +623,7 @@ export const shareManager = {
     try {
       document.execCommand('copy');
       ui.showToast('Results copied to clipboard');
-    } catch (error) {
+    } catch {
       ui.showToast('Share text generated (copy unavailable)');
     }
 

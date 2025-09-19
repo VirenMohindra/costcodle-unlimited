@@ -43,7 +43,7 @@ class CostcodleApp {
         return;
       }
 
-      console.log('🎮 Initializing Costcodle...');
+      console.info('🎮 Initializing Costcodle...');
 
       // Wait for DOM to be ready
       await this.waitForDOM();
@@ -58,7 +58,7 @@ class CostcodleApp {
       await this.startGame();
 
       this.initialized = true;
-      console.log('✅ Costcodle initialized successfully');
+      console.info('✅ Costcodle initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize Costcodle:', error);
       this.handleInitializationError(error as Error);
@@ -113,7 +113,7 @@ class CostcodleApp {
    * Restart the application
    */
   async restart(): Promise<void> {
-    console.log('🔄 Restarting application...');
+    console.info('🔄 Restarting application...');
     this.initialized = false;
     await this.init();
   }
@@ -135,7 +135,7 @@ class CostcodleApp {
    * Initialize all required modules
    */
   private async initializeModules(): Promise<void> {
-    console.log('🔧 Initializing modules...');
+    console.info('🔧 Initializing modules...');
 
     // Initialize keyboard navigation
     this.modules.keyboard.init();
@@ -149,7 +149,7 @@ class CostcodleApp {
     // Setup state change listeners
     this.setupStateListeners();
 
-    console.log('✅ Modules initialized');
+    console.info('✅ Modules initialized');
   }
 
   /**
@@ -203,7 +203,7 @@ class CostcodleApp {
    * Start the main game
    */
   private async startGame(): Promise<void> {
-    console.log('🎯 Starting game...');
+    console.info('🎯 Starting game...');
 
     try {
       // Update mode indicator
@@ -216,7 +216,7 @@ class CostcodleApp {
       // Initialize and start the game
       await this.modules.gameInitializer.startGame();
 
-      console.log('✅ Game started successfully');
+      console.info('✅ Game started successfully');
     } catch (error) {
       console.error('❌ Failed to start game:', error);
       throw error;
@@ -270,14 +270,14 @@ class CostcodleApp {
   private handleGameStateChange(newState: GameState, oldState: GameState): void {
     // Log game progress for analytics (if needed)
     if (newState.guesses.length !== oldState.guesses.length) {
-      console.log(
+      console.info(
         `🎯 Guess ${newState.guesses.length}/6:`,
         newState.guesses[newState.guesses.length - 1]
       );
     }
 
     if (newState.hasWon && !oldState.hasWon) {
-      console.log('🎉 Game won!');
+      console.info('🎉 Game won!');
     }
   }
 
@@ -451,7 +451,7 @@ class CostcodleApp {
           }
         });
 
-        console.log('✅ Service Worker registered successfully');
+        console.info('✅ Service Worker registered successfully');
 
         // Check for updates
         if (registration.active) {
